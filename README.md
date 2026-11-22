@@ -1,20 +1,28 @@
 # Orca
 
-`C` `HTTP` `Socket` `Linux`
+`C` `HTTP` `TCP/IP` `Sockets`
 
-Orca is a HTTP library written in C
+Orca is a lightweight HTTP server library written in C.
 
-# Objective
+## Objective
 
+Orca aims to provide a simple and lightweight interface for building HTTP servers in C, while keeping the underlying networking and request handling mechanisms explicit.
 
-
-# Example
+## Example
 
 ```c
 #include "http/orca_http.h"
 #include <stdio.h>
 
-static void home(OrcaRequest *req, OrcaResponse *res) { printf("Hello from Orca!\n"); };
+static void home(OrcaRequest *req, OrcaResponse *res) {
+    (void)req;
+
+    res->status = 200;
+    res->contentType = "text/plain";
+    res->body = "Hello from Orca!";
+    res->bodyLength = 16;
+}
+
 int main(void) {
     OrcaApp *app = orcaCreateApp();
     if(app == NULL) return 1;
@@ -24,15 +32,17 @@ int main(void) {
         return 1;
     }
 
-    orcaListenAndServe(app, 8080);
+    if(!orcaListenAndServe(app, 8080)) {
+        orcaDestroyApp(app);
+        return 1;
+    }
 
     orcaDestroyApp(app);
     return 0;
 }
-```
 
-See 'examples/' for examples about how to use the Orca library.
+See 'examples/' for more usage examples.
 
 # License
 
-This software is licensed under the MIT License. See 'LICENSE' for more information.
+This project is licensed under the MIT License. See 'LICENSE' for details.
